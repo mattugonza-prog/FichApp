@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FichApp</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f4f6f9;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+    }
+
+    .card{
+      background:white;
+      padding:25px;
+      border-radius:10px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+      width:350px;
+    }
+
+    h2{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    input, select{
+      width:100%;
+      padding:8px;
+      margin-top:10px;
+      border-radius:5px;
+      border:1px solid #ccc;
+    }
+
+    button{
+      width:100%;
+      padding:10px;
+      margin-top:15px;
+      border:none;
+      border-radius:5px;
+      background:#007bff;
+      color:white;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#0056b3;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .toast{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:#28a745;
+      color:white;
+      padding:10px 15px;
+      border-radius:5px;
+      display:none;
+    }
+
+    .loader{
+      text-align:center;
+      margin-top:10px;
+      display:none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="loginCard">
+  <h2>Ingreso</h2>
+  <input type="text" id="legajo" placeholder="Legajo">
+  <button onclick="validarLegajo()">Validar</button>
+  <div class="loader" id="loaderLogin">Validando...</div>
+</div>
+
+<div class="card hidden" id="formCard">
+  <h2 id="nombreEmpleado"></h2>
+
+  <select id="tipoNovedad" onchange="mostrarCampos()">
+    <option value="">Seleccionar novedad</option>
+    <option value="Entrada">Entrada</option>
+    <option value="Salida">Salida</option>
+    <option value="Entrada y Salida">Entrada y Salida</option>
+    <option value="Retiro Anticipado">Retiro Anticipado</option>
+    <option value="Ausencia">Ausencia</option>
+  </select>
+
+  <div id="campoEntrada" class="hidden">
+    <input type="time" id="horaEntrada">
+  </div>
+
+  <div id="campoSalida" class="hidden">
+    <input type="time" id="horaSalida">
+  </div>
+
+  <div id="campoMotivo" class="hidden">
+    <input type="text" id="motivo" placeholder="Motivo (obligatorio)">
+  </div>
+
+  <button onclick="enviar()">Guardar</button>
+  <div class="loader" id="loaderForm">Guardando...</div>
+</div>
+
+<div class="toast" id="toast">Registro guardado correctamente</div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycby56bWojmep6JArO91yv9kcXubZhgbAnzofUeZatZyuG4pl0oeyXa9gOVAQMEKtw30iAA/exec";
+
+let empleadoActual = null;
+
+function validarLegajo(){
+  const legajo = document.getElementById("legajo").value.trim();
+  if(!legajo) return alert("Ingrese legajo");
+
+  document.getElementById("loaderLogin").style.display="block";
+
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"validar",
+      legajo:legajo
+    })
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    document.getElementById("loaderLogin").style.display="none";
+
+    if(data.success){
+      empleadoActual = data;
+      document.getElementById("loginCard").classList.add("hidden");
+      document.getElementById("formCard").classList.remove("hidden");
+      document.getElementById("nombreEmpleado").innerText =
+        data.nombre + " (" + data.legajo + ")";
+    }else{
+      alert("Legajo no encontrado");
+    }
+  })
+  .catch(()=> alert("Error conexión"));
+}
+
+function mostrarCampos(){
+  const tipo = document.getElementById("tipoNovedad").value;
+
+  document.getElementById("campoEntrada").classList.add("hidden");
+  document.getElementById("campoSalida").classList.add("hidden");
+  document.getElementById("campoMotivo").classList.add("hidden");
+
+  if(tipo==="Entrada"){
+    document.getElementById("campoEntrada").classList.remove("hidden");
+  }
+
+  if(tipo==="Salida"){
+    document.getElementById("campoSalida").classList.remove("hidden");
+  }
+
+  if(tipo==="Entrada y Salida"){
+    document.getElementById("campoEntrada").classList.remove("hidden");
+    document.getElementById("campoSalida").classList.remove("hidden");
+  }
+
+  if(tipo==="Retiro Anticipado"){
+    document.getElementById("campoSalida").classList.remove("hidden");
+    document.getElementById("campoMotivo").classList.remove("hidden");
+  }
+
+  if(tipo==="Ausencia"){
+    document.getElementById("campoMotivo").classList.remove("hidden");
+  }
+}
+
+function enviar(){
+  const tipo = document.getElementById("tipoNovedad").value;
+  const horaEntrada = document.getElementById("horaEntrada").value;
+  const horaSalida = document.getElementById("horaSalida").value;
+  const motivo = document.getElementById("motivo").value;
+
+  if(!tipo) return alert("Seleccione novedad");
+
+  if(tipo==="Entrada" && !horaEntrada)
+    return alert("Debe ingresar hora de entrada");
+
+  if(tipo==="Salida" && !horaSalida)
+    return alert("Debe ingresar hora de salida");
+
+  if(tipo==="Entrada y Salida" && (!horaEntrada || !horaSalida))
+    return alert("Debe ingresar ambas horas");
+
+  if(tipo==="Retiro Anticipado" && (!horaSalida || !motivo))
+    return alert("Complete hora y motivo");
+
+  if(tipo==="Ausencia" && !motivo)
+    return alert("Debe ingresar motivo");
+
+  document.getElementById("loaderForm").style.display="block";
+
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"guardar",
+      legajo:empleadoActual.legajo,
+      nombre:empleadoActual.nombre,
+      tipo:tipo,
+      horaEntrada:horaEntrada,
+      horaSalida:horaSalida,
+      motivo:motivo
+    })
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    document.getElementById("loaderForm").style.display="none";
+
+    if(data.success){
+      mostrarToast();
+      resetForm();
+    }else{
+      alert("Error al guardar");
+    }
+  })
+  .catch(()=> alert("Error conexión"));
+}
+
+function mostrarToast(){
+  const toast = document.getElementById("toast");
+  toast.style.display="block";
+  setTimeout(()=> toast.style.display="none",3000);
+}
+
+function resetForm(){
+  document.getElementById("tipoNovedad").value="";
+  document.getElementById("horaEntrada").value="";
+  document.getElementById("horaSalida").value="";
+  document.getElementById("motivo").value="";
+  mostrarCampos();
+}
+
+</script>
+
+</body>
+</html>
