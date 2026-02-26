@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
     <title>FichApp</title>
     <style>
         :root {
@@ -46,7 +47,17 @@
         label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
         input, select, textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 1rem; font-family: inherit; background-color: #f8fafc; transition: border-color 0.2s; appearance: none; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: var(--card-bg); }
-        
+        /* Agrega esto dentro de tu bloque <style> */
+        .logo-fich {
+            color: var(--primary); /* Mantiene "Fich" en el color oscuro principal */
+            font-weight: bold;
+        }
+
+        .logo-app {
+            color: var(--success); /* Cambia "App" al color de acento azul */
+            font-weight: bold;
+        }
+
         button { 
             width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; 
         }
@@ -83,7 +94,7 @@
 <div id="toast"></div>
 
 <div class="card" id="mainCard">
-    <h2>FichApp</h2>
+    <h2><span class="logo-fich">Fich</span><span class="logo-app">App</span></h2>
     
     <div id="section-validar">
         <div class="form-group">
