@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FichApp</title>
     <style>
-        /* Estilos estilo C de Labs: minimalistas, limpios y modernos */
         :root {
             --bg-color: #f7f9fa;
             --card-bg: #ffffff;
@@ -42,117 +41,46 @@
             transition: all 0.3s ease;
         }
 
-        h2 {
-            margin: 0 0 24px 0;
-            font-size: 1.5rem;
-            text-align: center;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+        h2 { margin: 0 0 24px 0; font-size: 1.5rem; text-align: center; font-weight: 600; letter-spacing: -0.5px; }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+        input, select, textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 1rem; font-family: inherit; background-color: #f8fafc; transition: border-color 0.2s; appearance: none; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: var(--card-bg); }
+        
+        button { 
+            width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; 
         }
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: scale(0.96); background: var(--primary-hover); }
+        button:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; transform: none; }
 
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+        .link-volver {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.85rem;
             font-weight: 500;
+            transition: opacity 0.2s;
         }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            font-family: inherit;
-            background-color: #f8fafc;
-            transition: border-color 0.2s;
-            appearance: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background-color: var(--card-bg);
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s, opacity 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            margin-top: 24px;
-        }
-
-        button:active { transform: scale(0.98); }
-        button:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+        .link-volver:active { opacity: 0.7; }
 
         .hidden { display: none !important; }
         
-        /* Sistema de Toasts (Notificaciones) */
-        #toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100%);
-            padding: 12px 24px;
-            border-radius: 30px;
-            color: white;
-            font-weight: 500;
-            font-size: 0.9rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100%); padding: 12px 24px; border-radius: 30px; color: white; font-weight: 500; font-size: 0.9rem; z-index: 1000; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         #toast.success { background-color: var(--success); }
         #toast.error { background-color: var(--error); }
 
-        /* Loader CSS */
-        .loader {
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 0.8s linear infinite;
-        }
-        .loader-dark { border: 2px solid var(--border); border-top: 2px solid var(--primary); }
-
+        .loader { border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; width: 16px; height: 16px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .header-empleado {
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            text-align: center;
-        }
+        .header-empleado { background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 24px; text-align: center; }
         .header-empleado p { margin: 0; font-weight: 600; color: var(--primary); }
         .header-empleado small { color: var(--text-muted); font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<div id="toast">Mensaje de prueba</div>
+<div id="toast"></div>
 
 <div class="card" id="mainCard">
     <h2>FichApp</h2>
@@ -167,8 +95,8 @@
 
     <div id="section-novedades" class="hidden">
         <div class="header-empleado">
-            <p id="nombreEmpleado">Nombre Apellido</p>
-            <small id="subtituloLegajo">Legajo: 12345</small>
+            <p id="nombreEmpleado"></p>
+            <small id="subtituloLegajo"></small>
         </div>
 
         <div class="form-group">
@@ -188,18 +116,16 @@
         <button id="btnGuardar" disabled onclick="guardarRegistro()">Guardar Novedad</button>
         
         <div style="text-align: center; margin-top: 16px;">
-            <a href="#" onclick="reiniciarApp()" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">← Cancelar y volver</a>
+            <a href="#" onclick="reiniciarApp()" class="link-volver">← Cancelar y volver</a>
         </div>
     </div>
 </div>
 
 <script>
-    // ⚠️ REEMPLAZA ESTA URL CON LA QUE TE DÉ GOOGLE APPS SCRIPT
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRre3HxgKuz6zkPcCykYLAWbtwh96H-c_Jf1ZscrhMIiHlDnpsg2vfmsBoLLlvBfZpPA/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyu1yv_sJqoMuGBeR8UvQ-rsbOMOayOO2Z3E1-ig0LkcjzBfySalGBt2Bo__Gb7CtdA-Q/exec"; 
     
     let empleadoActual = { legajo: "", nombre: "" };
 
-    // --- MANEJO DE INTERFAZ ---
     function mostrarToast(mensaje, tipo) {
         const toast = document.getElementById('toast');
         toast.textContent = mensaje;
@@ -217,7 +143,6 @@
         validarFormulario();
     }
 
-    // --- VALIDACIÓN DE LEGAJO ---
     async function validarLegajo() {
         const legajo = document.getElementById('legajoInput').value.trim();
         if (!legajo) {
@@ -252,7 +177,6 @@
         }
     }
 
-    // --- FORMULARIO DINÁMICO ---
     document.getElementById('tipoNovedad').addEventListener('change', (e) => {
         const tipo = e.target.value;
         const contenedor = document.getElementById('camposDinamicos');
@@ -260,36 +184,17 @@
 
         if (tipo === "Cambio de Horario") {
             html = `
-                <div class="form-group">
-                    <label>Fecha del cambio</label>
-                    <input type="date" id="fechaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Nuevo Horario (Ej: 09:00 a 18:00)</label>
-                    <input type="text" id="horaNovedad" placeholder="De -- a --" required class="dinamico">
-                </div>`;
+                <div class="form-group"><label>Fecha del cambio</label><input type="date" id="fechaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Nuevo Horario (Ej: 09:00 a 18:00)</label><input type="text" id="horaNovedad" placeholder="De -- a --" required class="dinamico"></div>`;
         } else if (tipo === "Cambio de Franco") {
             html = `
-                <div class="form-group">
-                    <label>Fecha del NUEVO franco</label>
-                    <input type="date" id="fechaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Fecha del franco ANTERIOR</label>
-                    <input type="date" id="detallesNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Horario a trabajar (día del franco anterior)</label>
-                    <input type="text" id="horaNovedad" required class="dinamico" placeholder="Ej: 09:00 a 18:00">
-                </div>`;
+                <div class="form-group"><label>Fecha del NUEVO franco</label><input type="date" id="fechaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Fecha del franco ANTERIOR</label><input type="date" id="detallesNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Horario a trabajar (día del franco anterior)</label><input type="text" id="horaNovedad" required class="dinamico" placeholder="Ej: 09:00 a 18:00"></div>`;
         } else if (tipo === "Fichada Manual") {
             html = `
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="fechaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Tipo de fichada omitida</label>
+                <div class="form-group"><label>Fecha</label><input type="date" id="fechaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Tipo de fichada omitida</label>
                     <select id="subtipoFichada" class="dinamico" required onchange="ajustarFichadaManual()">
                         <option value="" disabled selected>Seleccionar...</option>
                         <option value="Solo Entrada">Solo Entrada</option>
@@ -298,47 +203,27 @@
                     </select>
                 </div>
                 <div id="contenedorHorasFichada"></div>
-                <div class="form-group">
-                    <label>Observación (Motivo)</label>
-                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
-                </div>`;
+                <div class="form-group"><label>Observación (Motivo)</label><textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea></div>`;
         } else if (tipo === "Retiro Anticipado") {
             html = `
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="fechaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Horario de retiro</label>
-                    <input type="time" id="horaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Motivo</label>
-                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
-                </div>`;
+                <div class="form-group"><label>Fecha</label><input type="date" id="fechaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Horario de retiro</label><input type="time" id="horaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Motivo</label><textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea></div>`;
         } else if (tipo === "Ausencia") {
             html = `
-                <div class="form-group">
-                    <label>Fecha de ausencia</label>
-                    <input type="date" id="fechaNovedad" required class="dinamico">
-                </div>
-                <div class="form-group">
-                    <label>Motivo</label>
-                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
-                </div>`;
+                <div class="form-group"><label>Fecha de ausencia</label><input type="date" id="fechaNovedad" required class="dinamico"></div>
+                <div class="form-group"><label>Motivo</label><textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea></div>`;
         }
 
         contenedor.innerHTML = html;
         validarFormulario();
         
-        // Agregar listeners a los nuevos campos creados para validar en tiempo real
         document.querySelectorAll('.dinamico').forEach(el => {
             el.addEventListener('input', validarFormulario);
             el.addEventListener('change', validarFormulario);
         });
     });
 
-    // Sub-lógica para Fichada Manual
     window.ajustarFichadaManual = function() {
         const subtipo = document.getElementById('subtipoFichada').value;
         const cont = document.getElementById('contenedorHorasFichada');
@@ -361,7 +246,6 @@
         validarFormulario();
     }
 
-    // --- VALIDACIÓN GENERAL PARA HABILITAR BOTÓN GUARDAR ---
     function validarFormulario() {
         const tipo = document.getElementById('tipoNovedad').value;
         const btn = document.getElementById('btnGuardar');
@@ -381,7 +265,6 @@
         btn.disabled = !todoValido;
     }
 
-    // --- GUARDADO DE REGISTRO ---
     async function guardarRegistro() {
         const btn = document.getElementById('btnGuardar');
         const originalText = btn.textContent;
@@ -389,17 +272,23 @@
         btn.innerHTML = '<span class="loader"></span> Guardando...';
 
         const tipo = document.getElementById('tipoNovedad').value;
-        let fecha = document.getElementById('fechaNovedad')?.value || "";
-        let hora = document.getElementById('horaNovedad')?.value || "";
-        let detalles = document.getElementById('detallesNovedad')?.value || "";
+        
+        const inputFecha = document.getElementById('fechaNovedad');
+        const inputHora = document.getElementById('horaNovedad');
+        const inputDetalles = document.getElementById('detallesNovedad');
 
-        // Formateos especiales
+        let fecha = inputFecha ? inputFecha.value : "";
+        let hora = inputHora ? inputHora.value : "";
+        let detalles = inputDetalles ? inputDetalles.value : "";
+
         if (tipo === "Cambio de Franco") {
-            detalles = `Franco anterior: ${detalles}`; // Detalles guardaba la fecha anterior
+            detalles = `Franco anterior: ${detalles}`; 
         } else if (tipo === "Fichada Manual") {
             const subtipo = document.getElementById('subtipoFichada').value;
             if (subtipo === "Entrada y Salida") {
-                hora = `Entrada: ${document.getElementById('horaEntrada').value} | Salida: ${document.getElementById('horaSalida').value}`;
+                const entrada = document.getElementById('horaEntrada').value;
+                const salida = document.getElementById('horaSalida').value;
+                hora = `Entrada: ${entrada} | Salida: ${salida}`;
             } else {
                 hora = `${subtipo}: ${hora}`;
             }
@@ -417,7 +306,7 @@
         try {
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Truco para evitar error de CORS preflight
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             });
             
@@ -425,7 +314,7 @@
 
             if (res.exito) {
                 mostrarToast("Registro guardado correctamente", "success");
-                setTimeout(reiniciarApp, 1500); // Volver al inicio
+                setTimeout(reiniciarApp, 1500);
             } else {
                 mostrarToast("Falló la carga del registro", "error");
                 btn.disabled = false;
