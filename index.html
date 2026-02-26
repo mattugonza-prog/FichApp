@@ -1,296 +1,439 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>FichApp</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FichApp</title>
+    <style>
+        /* Estilos estilo C de Labs: minimalistas, limpios y modernos */
+        :root {
+            --bg-color: #f7f9fa;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --primary: #0f172a;
+            --primary-hover: #334155;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --radius: 16px;
+        }
 
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f4f6f9;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-.card{
-  background:white;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-  width:350px;
-}
+        .card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            padding: 32px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
 
-h2{
-  text-align:center;
-}
+        h2 {
+            margin: 0 0 24px 0;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
 
-input, select{
-  width:100%;
-  padding:8px;
-  margin-top:10px;
-  border-radius:5px;
-  border:1px solid #ccc;
-}
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
 
-button{
-  width:100%;
-  padding:10px;
-  margin-top:15px;
-  border:none;
-  border-radius:5px;
-  background:#007bff;
-  color:white;
-  cursor:pointer;
-}
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
 
-button:hover{
-  background:#0056b3;
-}
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
+            appearance: none;
+        }
 
-.hidden{
-  display:none;
-}
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--card-bg);
+        }
 
-.toast{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#28a745;
-  color:white;
-  padding:10px 15px;
-  border-radius:5px;
-  display:none;
-}
-</style>
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+        .hidden { display: none !important; }
+        
+        /* Sistema de Toasts (Notificaciones) */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            padding: 12px 24px;
+            border-radius: 30px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        #toast.success { background-color: var(--success); }
+        #toast.error { background-color: var(--error); }
+
+        /* Loader CSS */
+        .loader {
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.8s linear infinite;
+        }
+        .loader-dark { border: 2px solid var(--border); border-top: 2px solid var(--primary); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .header-empleado {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .header-empleado p { margin: 0; font-weight: 600; color: var(--primary); }
+        .header-empleado small { color: var(--text-muted); font-size: 0.8rem; }
+    </style>
 </head>
-
 <body>
 
-<div class="card" id="loginCard">
-  <h2>Ingreso</h2>
-  <input type="text" id="legajo" placeholder="Legajo">
-  <button onclick="validarLegajo()">Validar</button>
+<div id="toast">Mensaje de prueba</div>
+
+<div class="card" id="mainCard">
+    <h2>FichApp</h2>
+    
+    <div id="section-validar">
+        <div class="form-group">
+            <label for="legajoInput">Número de Legajo</label>
+            <input type="number" id="legajoInput" placeholder="Ej: 12345" inputmode="numeric">
+        </div>
+        <button id="btnValidar" onclick="validarLegajo()">Continuar</button>
+    </div>
+
+    <div id="section-novedades" class="hidden">
+        <div class="header-empleado">
+            <p id="nombreEmpleado">Nombre Apellido</p>
+            <small id="subtituloLegajo">Legajo: 12345</small>
+        </div>
+
+        <div class="form-group">
+            <label for="tipoNovedad">Tipo de Novedad</label>
+            <select id="tipoNovedad" required>
+                <option value="" disabled selected>Selecciona una opción...</option>
+                <option value="Cambio de Horario">Cambio de Horario</option>
+                <option value="Cambio de Franco">Cambio de Franco</option>
+                <option value="Fichada Manual">Fichada Manual</option>
+                <option value="Retiro Anticipado">Retiro Anticipado</option>
+                <option value="Ausencia">Ausencia</option>
+            </select>
+        </div>
+
+        <div id="camposDinamicos"></div>
+
+        <button id="btnGuardar" disabled onclick="guardarRegistro()">Guardar Novedad</button>
+        
+        <div style="text-align: center; margin-top: 16px;">
+            <a href="#" onclick="reiniciarApp()" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">← Cancelar y volver</a>
+        </div>
+    </div>
 </div>
-
-<div class="card hidden" id="formCard">
-  <h2 id="nombreEmpleado"></h2>
-
-  <select id="tipoNovedad" onchange="mostrarCampos()">
-    <option value="">Seleccionar novedad</option>
-    <option value="Ficha Manual">Ficha Manual</option>
-    <option value="Cambio de Franco">Cambio de Franco</option>
-    <option value="Retiro Anticipado">Retiro Anticipado</option>
-    <option value="Ausencia">Ausencia</option>
-  </select>
-
-  <!-- Subtipo Ficha Manual -->
-  <div id="subTipoFicha" class="hidden">
-    <select id="tipoFichaManual" onchange="mostrarCamposFichaManual()">
-      <option value="">Seleccionar tipo de ficha</option>
-      <option value="Entrada">Entrada</option>
-      <option value="Salida">Salida</option>
-      <option value="Ambas">Entrada y Salida</option>
-    </select>
-  </div>
-
-  <!-- Hora Entrada -->
-  <div id="campoEntrada" class="hidden">
-    <input type="time" id="horaEntrada">
-  </div>
-
-  <!-- Hora Salida -->
-  <div id="campoSalida" class="hidden">
-    <input type="time" id="horaSalida">
-  </div>
-
-  <!-- Motivo -->
-  <div id="campoMotivo" class="hidden">
-    <input type="text" id="motivo" placeholder="Motivo">
-  </div>
-
-  <button onclick="enviar()">Guardar</button>
-</div>
-
-<div class="toast" id="toast">Registro guardado correctamente</div>
 
 <script>
+    // ⚠️ REEMPLAZA ESTA URL CON LA QUE TE DÉ GOOGLE APPS SCRIPT
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRre3HxgKuz6zkPcCykYLAWbtwh96H-c_Jf1ZscrhMIiHlDnpsg2vfmsBoLLlvBfZpPA/exec"; 
+    
+    let empleadoActual = { legajo: "", nombre: "" };
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxg4RTDl7ucjUoM3S-GwbrUFRqBfrbFYY8keTnWzU47nXY1Rt4cXpUXBt8ibFw3M0-SLg/exec";
-
-let empleadoActual = null;
-
-/* ===========================
-   VALIDAR LEGAJO
-=========================== */
-function validarLegajo(){
-  const legajo = document.getElementById("legajo").value.trim();
-  if(!legajo) return alert("Ingrese legajo");
-
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"validar",
-      legajo:legajo
-    })
-  })
-  .then(res=>res.json())
-  .then(data=>{
-    if(data.success){
-      empleadoActual = data;
-      document.getElementById("loginCard").classList.add("hidden");
-      document.getElementById("formCard").classList.remove("hidden");
-      document.getElementById("nombreEmpleado").innerText =
-        data.nombre + " (" + data.legajo + ")";
-    }else{
-      alert("Legajo no encontrado");
+    // --- MANEJO DE INTERFAZ ---
+    function mostrarToast(mensaje, tipo) {
+        const toast = document.getElementById('toast');
+        toast.textContent = mensaje;
+        toast.className = `show ${tipo}`;
+        setTimeout(() => { toast.className = toast.className.replace('show', '').trim(); }, 3500);
     }
-  })
-  .catch(()=> alert("Error conexión"));
-}
 
-/* ===========================
-   MOSTRAR CAMPOS PRINCIPAL
-=========================== */
-function mostrarCampos(){
-  ocultarTodo();
-
-  const tipo = document.getElementById("tipoNovedad").value;
-
-  if(tipo === "Ficha Manual"){
-    document.getElementById("subTipoFicha").classList.remove("hidden");
-  }
-
-  if(tipo === "Cambio de Franco"){
-    document.getElementById("campoMotivo").classList.remove("hidden");
-  }
-
-  if(tipo === "Retiro Anticipado"){
-    document.getElementById("campoSalida").classList.remove("hidden");
-    document.getElementById("campoMotivo").classList.remove("hidden");
-  }
-
-  if(tipo === "Ausencia"){
-    document.getElementById("campoMotivo").classList.remove("hidden");
-  }
-}
-
-/* ===========================
-   MOSTRAR CAMPOS FICHA MANUAL
-=========================== */
-function mostrarCamposFichaManual(){
-  ocultarCamposHoras();
-
-  const subTipo = document.getElementById("tipoFichaManual").value;
-
-  if(subTipo === "Entrada"){
-    document.getElementById("campoEntrada").classList.remove("hidden");
-  }
-
-  if(subTipo === "Salida"){
-    document.getElementById("campoSalida").classList.remove("hidden");
-  }
-
-  if(subTipo === "Ambas"){
-    document.getElementById("campoEntrada").classList.remove("hidden");
-    document.getElementById("campoSalida").classList.remove("hidden");
-  }
-}
-
-/* ===========================
-   ENVIAR
-=========================== */
-function enviar(){
-  const tipo = document.getElementById("tipoNovedad").value;
-  const subTipo = document.getElementById("tipoFichaManual").value;
-  const horaEntrada = document.getElementById("horaEntrada").value;
-  const horaSalida = document.getElementById("horaSalida").value;
-  const motivo = document.getElementById("motivo").value;
-
-  if(!tipo) return alert("Seleccione novedad");
-
-  if(tipo === "Ficha Manual"){
-    if(!subTipo) return alert("Seleccione tipo de ficha");
-
-    if(subTipo === "Entrada" && !horaEntrada)
-      return alert("Debe ingresar hora de entrada");
-
-    if(subTipo === "Salida" && !horaSalida)
-      return alert("Debe ingresar hora de salida");
-
-    if(subTipo === "Ambas" && (!horaEntrada || !horaSalida))
-      return alert("Debe ingresar ambas horas");
-  }
-
-  if(tipo === "Retiro Anticipado"){
-    if(!horaSalida || !motivo)
-      return alert("Complete hora de salida y motivo");
-  }
-
-  if(tipo === "Cambio de Franco" && !motivo)
-    return alert("Debe ingresar motivo");
-
-  if(tipo === "Ausencia" && !motivo)
-    return alert("Debe ingresar motivo");
-
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"guardar",
-      legajo:empleadoActual.legajo,
-      nombre:empleadoActual.nombre,
-      tipo: tipo === "Ficha Manual"
-            ? "Ficha Manual - " + subTipo
-            : tipo,
-      horaEntrada:horaEntrada,
-      horaSalida:horaSalida,
-      motivo:motivo
-    })
-  })
-  .then(res=>res.json())
-  .then(data=>{
-    if(data.success){
-      mostrarToast();
-      resetForm();
-    }else{
-      alert("Error al guardar");
+    function reiniciarApp() {
+        document.getElementById('legajoInput').value = "";
+        document.getElementById('tipoNovedad').value = "";
+        document.getElementById('camposDinamicos').innerHTML = "";
+        document.getElementById('section-novedades').classList.add('hidden');
+        document.getElementById('section-validar').classList.remove('hidden');
+        empleadoActual = { legajo: "", nombre: "" };
+        validarFormulario();
     }
-  })
-  .catch(()=> alert("Error conexión"));
-}
 
-/* ===========================
-   UTILIDADES
-=========================== */
-function ocultarTodo(){
-  document.getElementById("subTipoFicha").classList.add("hidden");
-  document.getElementById("campoEntrada").classList.add("hidden");
-  document.getElementById("campoSalida").classList.add("hidden");
-  document.getElementById("campoMotivo").classList.add("hidden");
-}
+    // --- VALIDACIÓN DE LEGAJO ---
+    async function validarLegajo() {
+        const legajo = document.getElementById('legajoInput').value.trim();
+        if (!legajo) {
+            mostrarToast("Ingresa un número de legajo", "error");
+            return;
+        }
 
-function ocultarCamposHoras(){
-  document.getElementById("campoEntrada").classList.add("hidden");
-  document.getElementById("campoSalida").classList.add("hidden");
-}
+        const btn = document.getElementById('btnValidar');
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> Validando...';
 
-function mostrarToast(){
-  const toast = document.getElementById("toast");
-  toast.style.display="block";
-  setTimeout(()=> toast.style.display="none",3000);
-}
+        try {
+            const response = await fetch(`${WEB_APP_URL}?legajo=${legajo}`);
+            const res = await response.json();
 
-function resetForm(){
-  document.getElementById("tipoNovedad").value="";
-  document.getElementById("tipoFichaManual").value="";
-  document.getElementById("horaEntrada").value="";
-  document.getElementById("horaSalida").value="";
-  document.getElementById("motivo").value="";
-  ocultarTodo();
-}
+            if (res.exito) {
+                empleadoActual = { legajo: legajo, nombre: res.nombre };
+                document.getElementById('nombreEmpleado').textContent = res.nombre;
+                document.getElementById('subtituloLegajo').textContent = `Legajo: ${legajo}`;
+                
+                document.getElementById('section-validar').classList.add('hidden');
+                document.getElementById('section-novedades').classList.remove('hidden');
+            } else {
+                mostrarToast("Legajo inválido o no encontrado", "error");
+            }
+        } catch (error) {
+            mostrarToast("Error de conexión. Intenta de nuevo.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
 
+    // --- FORMULARIO DINÁMICO ---
+    document.getElementById('tipoNovedad').addEventListener('change', (e) => {
+        const tipo = e.target.value;
+        const contenedor = document.getElementById('camposDinamicos');
+        let html = "";
+
+        if (tipo === "Cambio de Horario") {
+            html = `
+                <div class="form-group">
+                    <label>Fecha del cambio</label>
+                    <input type="date" id="fechaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Nuevo Horario (Ej: 09:00 a 18:00)</label>
+                    <input type="text" id="horaNovedad" placeholder="De -- a --" required class="dinamico">
+                </div>`;
+        } else if (tipo === "Cambio de Franco") {
+            html = `
+                <div class="form-group">
+                    <label>Fecha del NUEVO franco</label>
+                    <input type="date" id="fechaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Fecha del franco ANTERIOR</label>
+                    <input type="date" id="detallesNovedad" required class="dinamico">
+                </div>`;
+        } else if (tipo === "Fichada Manual") {
+            html = `
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="fechaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de fichada omitida</label>
+                    <select id="subtipoFichada" class="dinamico" required onchange="ajustarFichadaManual()">
+                        <option value="" disabled selected>Seleccionar...</option>
+                        <option value="Solo Entrada">Solo Entrada</option>
+                        <option value="Solo Salida">Solo Salida</option>
+                        <option value="Entrada y Salida">Entrada y Salida</option>
+                    </select>
+                </div>
+                <div id="contenedorHorasFichada"></div>
+                <div class="form-group">
+                    <label>Observación (Motivo)</label>
+                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
+                </div>`;
+        } else if (tipo === "Retiro Anticipado") {
+            html = `
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="fechaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Horario de retiro</label>
+                    <input type="time" id="horaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Motivo</label>
+                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
+                </div>`;
+        } else if (tipo === "Ausencia") {
+            html = `
+                <div class="form-group">
+                    <label>Fecha de ausencia</label>
+                    <input type="date" id="fechaNovedad" required class="dinamico">
+                </div>
+                <div class="form-group">
+                    <label>Motivo</label>
+                    <textarea id="detallesNovedad" rows="2" required class="dinamico"></textarea>
+                </div>`;
+        }
+
+        contenedor.innerHTML = html;
+        validarFormulario();
+        
+        // Agregar listeners a los nuevos campos creados para validar en tiempo real
+        document.querySelectorAll('.dinamico').forEach(el => {
+            el.addEventListener('input', validarFormulario);
+            el.addEventListener('change', validarFormulario);
+        });
+    });
+
+    // Sub-lógica para Fichada Manual
+    window.ajustarFichadaManual = function() {
+        const subtipo = document.getElementById('subtipoFichada').value;
+        const cont = document.getElementById('contenedorHorasFichada');
+        
+        if (subtipo === "Solo Entrada") {
+            cont.innerHTML = `<div class="form-group"><label>Horario de Entrada</label><input type="time" id="horaNovedad" required class="dinamico"></div>`;
+        } else if (subtipo === "Solo Salida") {
+            cont.innerHTML = `<div class="form-group"><label>Horario de Salida</label><input type="time" id="horaNovedad" required class="dinamico"></div>`;
+        } else if (subtipo === "Entrada y Salida") {
+            cont.innerHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;"><label>Entrada</label><input type="time" id="horaEntrada" required class="dinamico"></div>
+                    <div class="form-group" style="flex: 1;"><label>Salida</label><input type="time" id="horaSalida" required class="dinamico"></div>
+                </div>`;
+        }
+        
+        document.querySelectorAll('.dinamico').forEach(el => {
+            el.addEventListener('input', validarFormulario);
+        });
+        validarFormulario();
+    }
+
+    // --- VALIDACIÓN GENERAL PARA HABILITAR BOTÓN GUARDAR ---
+    function validarFormulario() {
+        const tipo = document.getElementById('tipoNovedad').value;
+        const btn = document.getElementById('btnGuardar');
+        
+        if (!tipo) {
+            btn.disabled = true;
+            return;
+        }
+
+        const requeridos = document.querySelectorAll('.dinamico[required]');
+        let todoValido = true;
+        
+        requeridos.forEach(el => {
+            if (!el.value.trim()) todoValido = false;
+        });
+
+        btn.disabled = !todoValido;
+    }
+
+    // --- GUARDADO DE REGISTRO ---
+    async function guardarRegistro() {
+        const btn = document.getElementById('btnGuardar');
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> Guardando...';
+
+        const tipo = document.getElementById('tipoNovedad').value;
+        let fecha = document.getElementById('fechaNovedad')?.value || "";
+        let hora = document.getElementById('horaNovedad')?.value || "";
+        let detalles = document.getElementById('detallesNovedad')?.value || "";
+
+        // Formateos especiales
+        if (tipo === "Cambio de Franco") {
+            detalles = `Franco anterior: ${detalles}`; // Detalles guardaba la fecha anterior
+        } else if (tipo === "Fichada Manual") {
+            const subtipo = document.getElementById('subtipoFichada').value;
+            if (subtipo === "Entrada y Salida") {
+                hora = `Entrada: ${document.getElementById('horaEntrada').value} | Salida: ${document.getElementById('horaSalida').value}`;
+            } else {
+                hora = `${subtipo}: ${hora}`;
+            }
+        }
+
+        const payload = {
+            legajo: empleadoActual.legajo,
+            nombre: empleadoActual.nombre,
+            tipo: tipo,
+            fechaNovedad: fecha,
+            hora: hora,
+            detalles: detalles
+        };
+
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Truco para evitar error de CORS preflight
+                body: JSON.stringify(payload)
+            });
+            
+            const res = await response.json();
+
+            if (res.exito) {
+                mostrarToast("Registro guardado correctamente", "success");
+                setTimeout(reiniciarApp, 1500); // Volver al inicio
+            } else {
+                mostrarToast("Falló la carga del registro", "error");
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        } catch (error) {
+            mostrarToast("Error al conectar con el servidor", "error");
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
 </script>
+
 </body>
 </html>
